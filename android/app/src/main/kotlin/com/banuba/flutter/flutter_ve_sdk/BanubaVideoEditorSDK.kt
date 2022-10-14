@@ -21,6 +21,7 @@ import com.banuba.sdk.core.domain.AspectRatioProvider
 import com.banuba.sdk.core.domain.DraftConfig
 import com.banuba.sdk.core.ext.toPx
 import com.banuba.sdk.core.media.MediaFileNameHelper
+import com.banuba.sdk.core.pip.PictureInPictureProvider
 import com.banuba.sdk.core.ui.ContentFeatureProvider
 import com.banuba.sdk.effectplayer.adapter.BanubaEffectPlayerKoinModule
 import com.banuba.sdk.export.data.ExportFlowManager
@@ -29,7 +30,9 @@ import com.banuba.sdk.export.data.ExportParamsProvider
 import com.banuba.sdk.export.data.ForegroundExportFlowManager
 import com.banuba.sdk.export.di.VeExportKoinModule
 import com.banuba.sdk.gallery.di.GalleryKoinModule
+import com.banuba.sdk.playback.PlayerType
 import com.banuba.sdk.playback.di.VePlaybackSdkKoinModule
+import com.banuba.sdk.playback.pip.AVPlayerPiPProvider
 import com.banuba.sdk.token.storage.di.TokenStorageKoinModule
 import com.banuba.sdk.ve.di.VeSdkKoinModule
 import com.banuba.sdk.ve.domain.VideoRangeList
@@ -163,6 +166,10 @@ private class SampleIntegrationVeKoinModule {
                 objectEffectDefaultDuration = 2000
             )
         }
+
+        factory<PlayerType>{ PlayerType.AV }
+
+        single<PictureInPictureProvider> { AVPlayerPiPProvider(playerAudioOutputType = get()) }
     }
 }
 
