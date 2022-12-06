@@ -1,10 +1,16 @@
+import 'dart:io';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ve_sdk/audio_browser.dart';
+import 'package:flutter_ve_sdk/firebase_utils.dart';
 import 'package:image_picker/image_picker.dart';
 
+void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -70,8 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // Map is used for this sample to demonstrate playing exported video file.
     if (result is Map) {
       final exportedVideoFilePath = result[argExportedVideoFile];
+      final path = result["exportedVideoFilePath"].replaceFirst("file://", "");
+      FirebaseUtils.uploadTakesVideoToStorage(File(path));
       _showConfirmation(context, "Play exported video file?", () {
-        platform.invokeMethod(methodDemoPlayExportedVideo, exportedVideoFilePath);
+        platform.invokeMethod(methodDemoPlayExportedVideo, path);
       });
     }
   }
@@ -83,10 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
       final XFile? file = await _picker.pickVideo(source: ImageSource.gallery);
 
       if (file == null) {
-        debugPrint('Cannot open video editor with PIP - video was not selected!');
+        debugPrint(
+            'Cannot open video editor with PIP - video was not selected!');
       } else {
         debugPrint('Open video editor in pip with video = ${file.path}');
-        final result = await platform.invokeMethod(methodStartVideoEditorPIP, file.path);
+        final result =
+            await platform.invokeMethod(methodStartVideoEditorPIP, file.path);
 
         _handleExportResult(result);
       }
@@ -169,10 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showConfirmation(
-      BuildContext context,
-      String message,
-      VoidCallback block
-      ) {
+      BuildContext context, String message, VoidCallback block) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -186,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
             disabledTextColor: Colors.black,
             padding: const EdgeInsets.all(12.0),
             splashColor: Colors.redAccent,
-            onPressed: () => { Navigator.pop(context) },
+            onPressed: () => {Navigator.pop(context)},
             child: const Text(
               'Cancel',
               style: TextStyle(

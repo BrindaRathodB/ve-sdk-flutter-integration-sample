@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import Firebase
+import FirebaseCore
 import AVKit
 import BanubaAudioBrowserSDK
 
@@ -38,6 +39,7 @@ import BanubaAudioBrowserSDK
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        FirebaseApp.configure()
         var videoEditor: VideoEditor
         
         if useBanubaTokenStorage {
